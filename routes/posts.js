@@ -1,6 +1,7 @@
 const express = require('express');
 const Post = require('../models/post');
 const authMiddleware = require('../middleware/authmiddleware');
+const optionalAuth = require('../middleware/optionalAuth');
 const router = express.Router();
 
 //글 목록 보기
@@ -15,10 +16,10 @@ router.get('/', async (req, res) => {
 });
 
 //글 쓰기
-router.post('/', async (req, res) => {
+router.post('/', optionalAuth, async (req, res) => {
     const {title, content} = req.body;
-    const userId = req.userId;
- 
+    const userId = req.user ? req.user.userId : null;
+
     if(!title || !content) {
         return res.status(400).json({error: '제목과 내용을 모두 입력해주세요.'});
     } 
@@ -75,7 +76,6 @@ router.delete('/:id', authMiddleware, async (req, res) => {
 
     try {
         const deletePost = await Post.findById(id);
-        console.log(deletePost.title)
 
         if(!deletePost) {
             return res.status(404).json({ error: '게시글이 존재하지 않습니다.'});
@@ -93,13 +93,17 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     }
 });
 
+//유저자신이 쓴 글 목록 보기
 router.get('/myposts', authMiddleware, async (req, res) => {
+    const {userId} = req.user;
+
     try{
-        const myPosts = await Post.find({ userId: req.user.userId }).sort({createdAt: -1});
+        const myPosts = await Post.find({ userId }).sort({createdAt: -1});
         res.json(myPosts)
     }
     catch(err){
         res.status(500).json({ error: '서버에러'});
     }
 });
+
 module.exports = router;
