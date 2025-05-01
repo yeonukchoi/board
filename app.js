@@ -17,9 +17,6 @@ app.use('/auth', authRoutes);
 
 
 
-
-
-
 app.listen(3000, () => {
     console.log('서버가 실행중입니다.');
 });

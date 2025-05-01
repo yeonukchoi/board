@@ -17,13 +17,15 @@ router.get('/', async (req, res) => {
 //글 쓰기
 router.post('/', async (req, res) => {
     const {title, content} = req.body;
-
+    const userId = req.userId;
+ 
     if(!title || !content) {
         return res.status(400).json({error: '제목과 내용을 모두 입력해주세요.'});
     } 
 
     try {
         const newPost = await Post.create({
+            userId,
             title,
             content,
         });
@@ -37,7 +39,7 @@ router.post('/', async (req, res) => {
 
 //글 수정 
 router.put('/:id', authMiddleware, async (req, res) => {
-    const {id} = req.params;
+    const id = req.params;
     const {title, content} = req.body;
 
     if(!title || !content) {
@@ -52,7 +54,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
         }
         
         //작성자 확인
-        if(updatePost.author.toString() !== req.user.userId){
+        if(updatePost.userId.toString() !== req.user.userId){
             return res.status(403).json({error: '작성자만 수정할 수 있습니다.'});
         }
 
@@ -73,12 +75,13 @@ router.delete('/:id', authMiddleware, async (req, res) => {
 
     try {
         const deletePost = await Post.findById(id);
+        console.log(deletePost.title)
 
         if(!deletePost) {
             return res.status(404).json({ error: '게시글이 존재하지 않습니다.'});
         }
 
-        if(deletePost.author.toString() !== req.user.userId) {
+        if(deletePost.userId.toString() !== req.user.userId) {
             return res.status(403).json({error: '작성자만 삭제할 수 있습니다.'});
         }
 
@@ -90,4 +93,13 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     }
 });
 
+router.get('/myposts', authMiddleware, async (req, res) => {
+    try{
+        const myPosts = await Post.find({ userId: req.user.userId }).sort({createdAt: -1});
+        res.json(myPosts)
+    }
+    catch(err){
+        res.status(500).json({ error: '서버에러'});
+    }
+});
 module.exports = router;

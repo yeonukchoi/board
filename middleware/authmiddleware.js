@@ -12,8 +12,8 @@ const authMiddleware = (req, res, next) => {
     const token = authHeader.split(' ')[1];
 
     try {
-        const decoded= jwt.verify(token, SECRET_KEY);
-        req.user = decoded;//req.user에 사용자 정보 저장
+        const decoded = jwt.verify(token, SECRET_KEY);
+        req.user = { userId: decoded.userId};//req.user에 사용자 정보 저장
         next();
     }
     catch (err) {
