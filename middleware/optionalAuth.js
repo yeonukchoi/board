@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
-const SECRET_KEY = 'your_secret_key';
+const SECRET_KEY = 'chio';
 
 const optionalAuth = (req, res, next) => {
-    const authHeader = req.header.authorization;
+    const authHeader = req.headers.authorization;
 
-    if(authHeader && authHeader.startWith('Bearer ')){
+    if(authHeader && authHeader.startsWith('Bearer ')){
         const token = authHeader.split(' ')[1];
 
         try{    
@@ -12,8 +12,11 @@ const optionalAuth = (req, res, next) => {
             req.user = {userId: decoded.userId};
         }
         catch(err){
-
+            req.user = null;
         }
+    }
+    else {
+        req.user = null //토큰이 없는 경우 req.user을 null로 설정
     }
     next();
 };

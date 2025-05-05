@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const SECRET_KEY = 'your-secret-key';
+const SECRET_KEY = 'chio';
 
 const authMiddleware = (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -17,6 +17,7 @@ const authMiddleware = (req, res, next) => {
         next();
     }
     catch (err) {
+        console.log(err);
         res.status(401).json({error: '유효하지 않은 토큰입니다.'});
     }
 }

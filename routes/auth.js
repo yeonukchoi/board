@@ -2,7 +2,7 @@ const exrpress = require('express');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const SECRET_KEY = 'your-secret-key';
+const SECRET_KEY = 'chio';
 
 
 const router = exrpress.Router();
@@ -24,6 +24,7 @@ router.post('/register', async (req, res) => {
         res.status(201).json({message: '회원가입 성공'});
     }
     catch (err) {
+        console.log(err);
         res.status(500).json({error: '서버 에러'});
     }
 });
@@ -43,10 +44,11 @@ router.post('/login', async (req, res) => {
         }
 
         //jwt발급
-        const token = jwt.sign({userId: user._id}, SECRET_KEY, {expiresIn: '1h'});
+        const token = jwt.sign({userId: user._id}, SECRET_KEY, {expiresIn: '5h'});
         res.json({ message: '로그인 성공', token});
     }
     catch (err) {
+        console.log(err);
         res.status(500).json({error: '서버 에러'});
     }
 });

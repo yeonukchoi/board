@@ -40,7 +40,7 @@ router.post('/', optionalAuth, async (req, res) => {
 
 //글 수정 
 router.put('/:id', authMiddleware, async (req, res) => {
-    const id = req.params;
+    const id = req.params.id;
     const {title, content} = req.body;
 
     if(!title || !content) {
@@ -66,13 +66,14 @@ router.put('/:id', authMiddleware, async (req, res) => {
         res.json(updatePost);
     }
     catch (err) {
+        console.log(err);
         res.status(500).json({ error: '서버 에러'});
     }
 });
 
 //글 삭제
 router.delete('/:id', authMiddleware, async (req, res) => {
-    const {id} = req.params;
+     const {id} = req.params;
 
     try {
         const deletePost = await Post.findById(id);
@@ -89,6 +90,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
         res.json({ message: '게시글을 삭제 했습니다.'});
     }
     catch (err) {
+        console.log(err);
         res.status(500).json({ error: '서버 에러'});
     }
 });
